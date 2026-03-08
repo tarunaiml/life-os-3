@@ -4,13 +4,23 @@ import { useState } from "react";
 
 export default function TaskTracker({ tasks = [], setTasks = () => {} }: any) {
 
-  const [task, setTask] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [type, setType] = useState("Assignment");
 
   const addTask = () => {
-    if (task.trim() === "") return;
+    if (taskName.trim() === "" || deadline === "") return;
 
-    setTasks([...tasks, task]);
-    setTask("");
+    const newTask = {
+      name: taskName,
+      deadline: deadline,
+      type: type
+    };
+
+    setTasks([...tasks, newTask]);
+
+    setTaskName("");
+    setDeadline("");
   };
 
   const deleteTask = (index: number) => {
@@ -27,10 +37,28 @@ export default function TaskTracker({ tasks = [], setTasks = () => {} }: any) {
       <div className="flex gap-2 mb-3">
         <input
           type="text"
-          placeholder="Enter task"
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
+          placeholder="Task name"
+          value={taskName}
+          onChange={(e) => setTaskName(e.target.value)}
           className="border p-2 rounded w-full"
+        />
+
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option>Assignment</option>
+          <option>Exam</option>
+          <option>Event</option>
+          <option>Goal</option>
+        </select>
+
+        <input
+          type="date"
+          value={deadline}
+          onChange={(e) => setDeadline(e.target.value)}
+          className="border p-2 rounded"
         />
 
         <button
@@ -42,12 +70,19 @@ export default function TaskTracker({ tasks = [], setTasks = () => {} }: any) {
       </div>
 
       <ul className="space-y-2">
-        {tasks.map((t: string, i: number) => (
+        {tasks.map((t, i) => (
           <li
             key={i}
-            className="border p-2 rounded flex justify-between"
+            className="border p-3 rounded flex justify-between"
           >
-            {t}
+            <div>
+              <p className="font-semibold">
+                [{t.type}] {t.name}
+              </p>
+              <p className="text-sm text-gray-500">
+                Date: {new Date(t.deadline).toLocaleDateString()}
+              </p>
+            </div>
 
             <button
               onClick={() => deleteTask(i)}
